@@ -223,3 +223,15 @@ private emails, or sensitive application notes.
 ## 2026-08-13 -- Attestation skeleton created (unsigned, awaiting human judgment)
 
 - **Artifact:** `scripts/ats/scrapers/workday/ATTESTATION.md` — Ran/Saw/Expected rows filled from this session's actual runs and the four "Did not test" items recorded; all 10 `JUDGMENT:` lines and the `Human signer` / `Date` fields left deliberately blank. Written by the agent at the human's direction; per the Verification Stack (layer 3) the attestation is the *human's* record, so nothing is signed and no verdict is claimed. Both recipes keep `attestation: null` — the field is repointed here only once a person fills and signs it.
+
+## 2026-08-13 -- Attestation signed by human reviewer
+
+- **Artifact:** scripts/ats/scrapers/workday/ATTESTATION.md — all 10 judgment
+  lines and the signature (include-ram, 2026-08-13) filled in by the human
+  reviewer directly, not drafted by the agent. Verdict: evidence supports
+  RUNNABLE-LIVE, not VERIFIED. Named gaps before VERIFIED: a second live
+  tenant on a different pod (wd3/wd5/wd12), the doctor privacy check re-run
+  against real scrape output on disk, and at least one tenant whose payload
+  populates jobPostingId/locationsText/jobFamilyGroup/jobScheduleType.
+  attestation: field in both recipes remains null per spec (set only at
+  VERIFIED).
