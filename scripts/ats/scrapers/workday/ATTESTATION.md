@@ -39,3 +39,11 @@ re-run against actual scrape output on disk, not an empty data/ats/ directory;
 and at least one tenant whose payload populates jobPostingId, locationsText,
 jobFamilyGroup, or jobScheduleType, so those four field mappings are exercised
 against real data instead of only against test fixtures.
+
+---
+Note: this attestation's structure (Ran/Saw/Judgment columns, no separate
+"Broke during testing / fixed" section) diverges from SNICKERDOODLE.md's
+Attestation Format template. Content-equivalent -- the break attempts and
+fixes are described inline in the Judgment column (see the 422 row) -- but
+not conformant to the letter of the spec. Flagging rather than reformatting,
+since reshaping a signed document risks changing its meaning.
