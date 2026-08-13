@@ -3,7 +3,7 @@ status: RUNNABLE-LIVE  # DRAFT | SPECIFIED | RUNNABLE-SAMPLE | RUNNABLE-LIVE | V
 todos_open: 0
 last_gate: "live-run, 2026-08-12, logs/RUN_LOG.md#2026-08-12"
 attestation: null      # path to attestation record, set only at VERIFIED
-recipe_version: 0.1.0
+recipe_version: 0.2.0
 ---
 
 # Recipe: Workday ATS Connector
@@ -40,6 +40,8 @@ the connector.
 ## 4. Primary stored tools
 
 - `scripts/ats/scrapers/workday/scraper.py` (this connector)
+- `scripts/ats/scrapers/workday/audit.py` (plausibility audit over a completed run;
+  a separate tool so the attested connector stays byte-identical)
 - `scripts/ats/scrapers/common/` (shared: `normalize.py`, `retry.py`, `rate_limiter.py`, `schema_validator.py`, `logger.py`, `config.py`) — reused, not reimplemented.
 
 No stored script exists yet for per-tenant `bulletFields` decoding or
@@ -57,6 +59,8 @@ python -m scrapers.workday.scraper --file companies.csv -o data/ats/workday/
 3. Classify the response per the phase gates above.
 4. Normalize surviving postings to the unified schema.
 5. Write `jobs.json`, `normalized_jobs.json`, `metadata.json` per company; `summary.json` at the output root.
+6. Audit the run before trusting it:
+   `python -m scrapers.workday.audit <output-dir> -o <output-dir>/workday-audit.md`
 
 ## 6. Output contract
 
@@ -65,6 +69,9 @@ Per company, under `-o` (default `data/ats/workday/<slug>/`):
 - `normalized_jobs.json` — array of unified records
 - `metadata.json` — original_name, normalized_name, tenant, host, career_site, careers_url, ats_source, job_count, total_reported, api_url, scraped_at, extraction_status, validation_error_count
 - `summary.json` at root — found/empty/not_found/invalid_careers_url/errors buckets
+- `workday-audit.md` at root (written by `audit.py`) — bucket counts, count
+  reconciliation, required-field completeness, optional-field fill rates, and a
+  summary-vs-disk check. Every figure is counted from the run's own files.
 
 A company that lands in `invalid_careers_url` or `errors` (first-page failure) writes no per-company directory.
 
@@ -74,6 +81,10 @@ A company that lands in `invalid_careers_url` or `errors` (first-page failure) w
 - `node scripts/conformance.mjs` — clean.
 - Every emitted record passes `validate_batch(strict=True)`.
 - Spot-check: fetch two `source_url` values live; both must return HTTP 200.
+- `python -m scrapers.workday.audit <output-dir>` — read the findings section. A
+  non-empty finding is not automatically a failure; it is a question for a human.
+- Boundary table (`scripts/ats/scrapers/workday/VERIFIED-INFERRED.md`) still
+  describes every emitted field. If a field is added, update it in the same commit.
 
 ## 8. Logging rules
 
@@ -83,6 +94,9 @@ A company that lands in `invalid_careers_url` or `errors` (first-page failure) w
 ## 9. Stop conditions
 
 - Stop if any bucket count in a real run doesn't match `summary.json`.
+- Stop if the audit reports a summary-vs-disk mismatch and the run is being read
+  by anything downstream — `summary.json` reflects only the most recent run,
+  while company directories persist.
 - Stop if a field would be populated from an undocumented source (e.g. `bulletFields` positional decoding) without human-reviewed per-tenant config.
 - Stop if `npm run doctor` or `npm run verify` is not clean.
 - Stop if `myworkdayjobs.com` is blackholed in the current environment — wildcard DNS means fake tenants also resolve, so a DNS failure indicates an environment problem, not a real absence.

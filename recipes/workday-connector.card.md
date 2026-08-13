@@ -3,7 +3,7 @@ status: RUNNABLE-LIVE  # DRAFT | SPECIFIED | RUNNABLE-SAMPLE | RUNNABLE-LIVE | V
 todos_open: 0
 last_gate: "live-run, 2026-08-12, logs/RUN_LOG.md#2026-08-12"
 attestation: null      # path to attestation record, set only at VERIFIED
-recipe_version: 0.1.0
+recipe_version: 0.2.0
 ---
 
 # Card: Workday ATS Connector
@@ -51,4 +51,6 @@ Per-company jobs.json (raw), normalized_jobs.json (unified schema), metadata.jso
 
 4. **Wildcard-DNS false confidence.** *.wd1.myworkdayjobs.com resolves for any subdomain, real or fake. DNS resolution can never distinguish a real tenant from a fake one — only the HTTP status code can.
 
-5. **Thin-schema tenants degrade quietly.** Some tenants' list endpoints don't return location/department/employment_type/jobPostingId at all — not an error, but a real asymmetry versus other ATS sources.
+5. **Summary-vs-disk drift (found live).** `summary.json` is rewritten by every run, but per-company directories persist. After a real run followed by a break test, the directory held 39 records while the summary reported zero found. Anything reading only the summary would conclude the run found nothing. `audit.py` flags this; the connector does not prevent it.
+
+6. **Thin-schema tenants degrade quietly.** Some tenants' list endpoints don't return location/department/employment_type/jobPostingId at all — not an error, but a real asymmetry versus other ATS sources.
