@@ -106,24 +106,51 @@ data/ats/.gitignore:11:*	data/ats/workday/cityofaurora/normalized_jobs.json
 All four scrape artifacts resolve to a bare `*` wildcard in `data/ats/.gitignore`.
 Nothing under `data/ats/` can be committed.
 
-**Ethics gate — conformance.** `npm run verify` **fails**, and honesty requires
-reporting that it fails for reasons that predate this contribution:
+**Ethics gate — conformance.** `npm run verify` **passes.** An earlier version of
+this document reported it as failing with six `E3` errors. That report was wrong,
+and the correction is worth recording, because the failure was real on the machine
+that observed it:
 
 ```
-$ npm run verify
-conformance: 137 files — ✓ all conform
-MANIFEST CHECK
-ERROR (6):
-  E3 AGENTS.md is out of sync with instructions/ — hand-edited or not rebuilt
-  E3 CLAUDE.md is out of sync with instructions/ ...
-  ... 4 more, all generated instruction files
-✗ manifest check FAILED (6 errors)
+$ npm run verify          # LF checkout (Linux/CI default, git core.autocrlf=false)
+conformance: 139 files — ✓ all conform
+✓ manifest check passed (4 warnings)
 ```
 
-Run against pristine upstream `main`, with none of this contribution present, it
-fails with the **same six errors**. This contribution adds zero new conformance
-errors. Regenerating those six files would fix the check but would put six
-unrelated files in the pull request, so they are left alone and reported instead.
+The six `E3` "out of sync with instructions/" errors appear **only on a Windows
+checkout with `core.autocrlf=true`**, and they appear identically on pristine
+upstream `main`. The cause is line endings, not content:
+
+```
+$ wc -c AGENTS.md instructions/.build/AGENTS.md
+ 7975 AGENTS.md
+ 8073 instructions/.build/AGENTS.md
+
+$ diff <(tr -d '\r' < AGENTS.md) <(tr -d '\r' < instructions/.build/AGENTS.md)
+$ echo $?
+0
+```
+
+Strip carriage returns from both sides and the files are byte-identical.
+`build-instructions.mjs` does not normalize line endings, so on a CRLF checkout a
+fresh build emits a different mix of CRLF and LF than the committed file, and the
+exact-string comparison in `manifest-check.mjs` fails. The same mechanism makes
+`doctor.mjs` report 0 of 44 recipes carrying lifecycle frontmatter on a CRLF
+checkout and 44 of 44 on an LF one.
+
+Confirmed across the full matrix — `main` and this branch, CRLF and LF:
+
+| Branch | Checkout | `manifest-check` |
+|---|---|---|
+| `main` | CRLF | ✗ 6 × E3 |
+| `main` | LF | ✓ passed |
+| `contrib/…workday-connector` | CRLF | ✗ 6 × E3 |
+| `contrib/…workday-connector` | LF | ✓ passed |
+
+This contribution adds zero conformance errors. Two upstream robustness defects
+are filed from this finding: `manifest-check.mjs` and `doctor.mjs` should both
+normalize line endings before comparing. Neither is fixed here — both are outside
+this contribution.
 
 ## 3. Break attempts
 

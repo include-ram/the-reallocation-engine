@@ -1,6 +1,12 @@
 # Attestation — Workday ATS Connector
 
-Human signer: _____include-ram________  Date: ____08/13/2026_________
+**Covers:** recipe `workday-connector` v0.1.0 · `scraper.py` as of commit `70dbaa2`
+**Human signer:** include-ram · **Date:** 2026-08-13
+
+> Scope note: SNICKERDOODLE.md holds that any edit to a recipe or its scripts
+> after attestation voids it. The recipe has since moved to v0.2.0. See
+> **Re-attestation — v0.2.0** at the foot of this file for what changed and
+> what still needs a human signature.
 
 ## Runs performed
 | Ran | Saw | Judgment |
@@ -40,10 +46,55 @@ and at least one tenant whose payload populates jobPostingId, locationsText,
 jobFamilyGroup, or jobScheduleType, so those four field mappings are exercised
 against real data instead of only against test fixtures.
 
+## Broke during testing, fixed
+
+Required by SNICKERDOODLE.md's Attestation Format. These are the same events
+described in the Judgment column above, restated as what failed / what changed /
+where.
+
+| What failed | What changed | Where |
+|---|---|---|
+| Unknown tenant returned HTTP 422 and was filed as `errors`, making a permanent configuration mistake look like a retryable transient failure | Added `NOT_FOUND_STATUS_CODES = (404, 422)`; first-page membership test routes both to `not_found`, retaining `status_code` so the two causes stay separable. Regression test pins that a mid-run 422 still degrades to `partial` rather than declaring the board missing. | `scraper.py`; `test_scraper.py` |
+| Original spec's host/path (`wd3.myworkdayjobs.com/wday/cxs/<tenant>/jobs`) resolved to 127.0.0.1 — no tenant was ever reachable | Replaced `--tenant` with `--careers-url` plus `parse_careers_url()`, recovering host / tenant / career-site from the public URL. Unparseable URLs get their own bucket and make no HTTP request. | `scraper.py` |
+| Generated `source_url` values were malformed (missing leading slash, duplicated `job/` segment) | Normalized the URL template; verified live — 2 of 2 generated URLs returned HTTP 200 | `scraper.py` |
+| `summary.json` is rewritten every run while per-company directories persist, so a real run followed by a break test left 39 records on disk and zero reported found | **Not fixed.** Detected by `audit.py`, reported as a finding, and documented as failure mode #5 on the card. The connector does not prevent it. | `audit.py`; `workday-connector.card.md` |
+
 ---
-Note: this attestation's structure (Ran/Saw/Judgment columns, no separate
-"Broke during testing / fixed" section) diverges from SNICKERDOODLE.md's
-Attestation Format template. Content-equivalent -- the break attempts and
-fixes are described inline in the Judgment column (see the 422 row) -- but
-not conformant to the letter of the spec. Flagging rather than reformatting,
-since reshaping a signed document risks changing its meaning.
+
+## Re-attestation — v0.2.0
+
+**Status: UNSIGNED — requires a human signature before this component is
+presented as attested.**
+
+Under SNICKERDOODLE.md, the v0.1.0 signature above was voided by subsequent
+edits. What changed since it was signed:
+
+- `audit.py` added — a plausibility auditor that counts what is on disk and
+  reports findings. It emits no new claims about the connector's behavior; it
+  reports counts.
+- Recipe moved v0.1.0 → v0.2.0 to reference the audit tool. Section content
+  otherwise unchanged.
+- Card gained failure mode #5 (`summary.json` vs. disk drift), found by the
+  auditor.
+- `docs/workday-connector-honest-run.md` and `VERIFIED-INFERRED.md` added.
+- **`scraper.py` is unchanged** — `git log` shows commit `70dbaa2` as the only
+  commit touching it, so the connector logic carries the original signature.
+
+One finding supersedes a v0.1.0 row: the privacy-gate row above records that
+`npm run doctor` ran without real scrape output present, and so did not exercise
+the case it exists to catch. It has since been re-run **with** the Aurora scrape
+output on disk — `doctor` exits 0, and all four artifacts resolve to
+`data/ats/.gitignore:11:*`. Evidence is in `docs/workday-connector-honest-run.md` §2.
+
+Signing below attests to having read the audit, the honest run, and the two
+documents added since v0.1.0 — not to having re-run every command in the table
+above.
+
+**Human signer:** ______________________  **Date:** ______________
+
+### Did not test (unchanged from v0.1.0, still open)
+- No second tenant, no second pod. The 422 rule remains confirmed on wd1 only.
+- The EMPTY path is exercised against mocks; no live board with zero postings
+  was located.
+- Four field mappings (`jobPostingId`, `locationsText`, `jobFamilyGroup`,
+  `jobScheduleType`) have never met a real payload that populates them.
