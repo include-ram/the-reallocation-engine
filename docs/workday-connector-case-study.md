@@ -1,6 +1,6 @@
 # Reading a Closed Door: A Workday Connector for an Evidence-First Job Search
 
-**Contribution to [The Reallocation Engine](https://github.com/nikbearbrown/the-reallocation-engine)** · [Pull request #2](https://github.com/include-ram/the-reallocation-engine/pull/2) · Python, public HTTP, no LLM calls
+**Contribution to [The Reallocation Engine](https://github.com/nikbearbrown/the-reallocation-engine)** · [Pull request #42](https://github.com/nikbearbrown/the-reallocation-engine/pull/42) · Python, public HTTP, no LLM calls
 
 ---
 
@@ -99,7 +99,7 @@ If another pod uses 422 differently, this connector will report a reachable boar
 
 ## Demo
 
-- **Pull request with full diff and maintainer-facing description:** [include-ram/the-reallocation-engine#2](https://github.com/include-ram/the-reallocation-engine/pull/2)
+- **Pull request with full diff and maintainer-facing description:** [nikbearbrown/the-reallocation-engine#42](https://github.com/nikbearbrown/the-reallocation-engine/pull/42) — 12 files, 2,835 additions, no deletions
 - **Run it yourself** (public data, no credentials, no API key):
 
 ```bash
