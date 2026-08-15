@@ -1,7 +1,8 @@
 # Attestation — Workday ATS Connector
 
 **Covers:** recipe `workday-connector` v0.1.0 · `scraper.py` as of commit `70dbaa2`
-**Human signer:** include-ram · **Date:** 2026-08-13
+**Human signer:** include-ram (GitHub handle for Sriram, the signer of both blocks
+in this file) · **Date:** 2026-08-13
 
 > Scope note: SNICKERDOODLE.md holds that any edit to a recipe or its scripts
 > after attestation voids it. The recipe has since moved to v0.2.0. See
@@ -63,8 +64,7 @@ where.
 
 ## Re-attestation — v0.2.0
 
-**Status: UNSIGNED — requires a human signature before this component is
-presented as attested.**
+**Status: SIGNED.**
 
 Under SNICKERDOODLE.md, the v0.1.0 signature above was voided by subsequent
 edits. What changed since it was signed:
@@ -90,7 +90,7 @@ Signing below attests to having read the audit, the honest run, and the two
 documents added since v0.1.0 — not to having re-run every command in the table
 above.
 
-**Human signer:** ______________________  **Date:** ______________
+**Human signer:** Sriram · **Date:** 2026-08-15
 
 ### Did not test (unchanged from v0.1.0, still open)
 - No second tenant, no second pod. The 422 rule remains confirmed on wd1 only.

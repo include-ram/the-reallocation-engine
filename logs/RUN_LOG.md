@@ -276,3 +276,11 @@ private emails, or sensitive application notes.
 - **`ATTESTATION.md` restructured, not rewritten.** Added the `Broke during testing, fixed` section required by SNICKERDOODLE's Attestation Format (four rows; the fourth records the `summary.json`-vs-disk defect as *not* fixed). Added a `Re-attestation — v0.2.0` block stating what changed since the signature, and correcting the v0.1.0 privacy-gate row — `npm run doctor` has since been re-run with the Aurora scrape output on disk. Header now names the covered version and commit (`70dbaa2`, verified as the only commit touching `scraper.py`, so the connector logic still carries the original signature).
 - **OPEN — human action.** The v0.2.0 re-attestation block is deliberately **UNSIGNED**. An agent must not sign a human attestation; the signature line is left blank for the named human.
 - **Verification:** `node scripts/conformance.mjs` and `node scripts/manifest-check.mjs` run on an LF checkout before commit.
+
+## 2026-08-15 -- Workday connector: v0.2.0 re-attestation signed
+
+- **Gate cleared:** the v0.2.0 re-attestation block in `scripts/ats/scrapers/workday/ATTESTATION.md` is signed — **Sriram, 2026-08-15**. This closes the human-action item opened by the recipe's v0.1.0 → v0.2.0 move, which under SNICKERDOODLE voided the prior signature.
+- **Scope of the signature:** having read the audit, the honest run, and the two documents added since v0.1.0 (`VERIFIED-INFERRED.md`, `docs/workday-connector-honest-run.md`). It does **not** claim every command in the v0.1.0 runs table was re-executed; the block says so explicitly.
+- **Signer identity reconciled:** the v0.1.0 block is signed `include-ram` (GitHub handle) and the v0.2.0 block `Sriram`. Same person; noted in the header rather than editing the earlier signed block.
+- **Unchanged by this entry:** recipe `status` stays `RUNNABLE-LIVE` and frontmatter `attestation:` stays `null` — per SNICKERDOODLE that field is set only at VERIFIED, and the evidence still does not support VERIFIED (one tenant, one pod; the 422 rule unconfirmed beyond wd1).
+- **Still open (carried forward):** second tenant / second pod; live EMPTY-path confirmation; four field mappings never exercised against a populating payload; the upstream line-ending defect in `manifest-check.mjs` / `doctor.mjs`.
