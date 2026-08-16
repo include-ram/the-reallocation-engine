@@ -284,3 +284,30 @@ private emails, or sensitive application notes.
 - **Signer identity reconciled:** the v0.1.0 block is signed `include-ram` (GitHub handle) and the v0.2.0 block `Sriram`. Same person; noted in the header rather than editing the earlier signed block.
 - **Unchanged by this entry:** recipe `status` stays `RUNNABLE-LIVE` and frontmatter `attestation:` stays `null` — per SNICKERDOODLE that field is set only at VERIFIED, and the evidence still does not support VERIFIED (one tenant, one pod; the 422 rule unconfirmed beyond wd1).
 - **Still open (carried forward):** second tenant / second pod; live EMPTY-path confirmation; four field mappings never exercised against a populating payload; the upstream line-ending defect in `manifest-check.mjs` / `doctor.mjs`.
+
+## 2026-08-16 -- Video plan split into two, per TA guidance
+
+- **Change:** TA specified two separate videos rather than the single combined
+  video the capstone rubric describes: (1) what the project is, its application,
+  and how it's used; (2) how it was built, what tools were used, and how.
+- **Did:** added `docs/video-1-project-overview-script.md` (product-facing: the
+  asymmetry, the gap this connector closes, a short demo, what it deliberately
+  does not claim) and `docs/video-2-build-process-script.md` (process-facing:
+  Python/pytest/Claude Code as the tools, the wrong-spec-then-DNS-sweep story,
+  and the assignment's required uncut live-terminal segment moved here). The
+  original combined script (`docs/workday-connector-video-script.md`) is marked
+  superseded at the top, not deleted, per the repo's no-delete rule -- its
+  content was reused rather than rewritten.
+- **Live re-run during this session (2026-08-16, for footage, not yet logged in
+  the honest-run doc):** City of Aurora returned **44** postings, not the 39 in
+  the attested run. Diffed by `job_id` against the original 39-record set: **6
+  job IDs new, 1 gone** (net +5), 38 shared. `total_reported` == `job_count` ==
+  44, 0 validation errors, all four thin fields (location/department/
+  employment_type/date_posted) still empty on all 44 -- consistent with the
+  attested run's documented behavior, just a different, real snapshot of a
+  currently-hiring public board. One live URL spot-checked: HTTP 200. Not yet
+  written into `docs/workday-connector-honest-run.md` -- raw material for Video
+  2's live-run segment, pending a decision on whether to fold it into the
+  attested record as a second dated run.
+- **Verification:** `node scripts/conformance.mjs` clean on all three touched
+  files.

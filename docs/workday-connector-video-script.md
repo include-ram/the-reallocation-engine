@@ -1,3 +1,9 @@
+> **Superseded (2026-08-16).** The TA specified two separate videos instead of
+> one: `docs/video-1-project-overview-script.md` (what the project is, its
+> application, how it's used) and `docs/video-2-build-process-script.md` (tools
+> used, how they were used, including the uncut live-run requirement from this
+> document). Kept for reference, not deleted, per the repo's no-delete rule.
+
 # Explainer Video — Shot List and Script (Workday ATS Connector)
 
 Target: 3–6 minutes. The graded core is **at least one unscripted, uncut segment
